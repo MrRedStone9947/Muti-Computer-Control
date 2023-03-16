@@ -1,0 +1,6 @@
+{
+    "test": {
+        "description": "TEST",
+        "dir": "test.bat"
+    }
+}
