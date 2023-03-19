@@ -1,6 +1,6 @@
 {
     "test": {
-        "description": "TEST",
+        "description": "预留测试位",
         "dir": "test.bat"
     }
 }

@@ -1,6 +1,6 @@
-import socket,time,base64,json,os
+import socket,time,base64,json,os,sys
 
-# import win32api,win32con,sys
+# import win32api,win32con
 #
 # name='remote_control_client'
 # if hasattr(sys, 'frozen'):
@@ -27,6 +27,8 @@ class ControlClient():
     def recvFile(self):
         print('等待发送文件头...')
         header=json.loads(base64.b64decode(self.SOCKET.recv(1024)).decode(encoding='utf-8'))
+        message=base64.b64encode('Data Received'.encode(encoding='utf-8'))
+        self.SOCKET.sendall(message)
         print(header)
         print('接收到文件头！')
 
@@ -54,19 +56,31 @@ class ControlClient():
         print(command)
         try:
             if command=='sendPlugin':
-                if (len(args)>1 and args[args.index('-t')+1]==self.id) or len(args)==1:
+                if len(args)>1 and args[args.index('-t')+1]==self.id:
                     print('指令为接收一个插件')
                     self.recvFile()
             elif command=='runPlugin':
+                print('指令为运行一个插件')
                 if len(args)>1 and args[args.index('-t')+1]==self.id:
                     t=args.index('-t')+2
                     os.system(".\plugins\%s %s"%(plugin_parser[args[t]]['dir'],''.join(args[t+1:])))
                 elif len(args)==1:
                     os.system(".\plugins\%s %s"%(plugin_parser[args[0]]['dir'],''.join(args[1:])))
+            # elif command=='reload':
+            #     if (len(args)>1 and args[args.index('-t')+1]==self.id) or len(args)==0:
+            #         print('开始重启...')
+            #         if hasattr(sys, 'frozen'):
+            #             t=os.path.basename(os.path.abspath(sys.executable))
+            #         else:
+            #             t='python '+os.path.basename(os.path.abspath(__file__))
+            #         print(t)
+            #         os.system('%s'%(t))
+            #         self.SOCKET.close()
+            #         exit(0)
             feedback={'status':'SUCCESS'}
         except Exception as err:
+            print(err)
             feedback={'status':'FAILED','error':str(err)}
-        print(feedback)
         message=base64.b64encode(json.dumps(feedback).encode(encoding='utf-8'))
         self.SOCKET.sendall(message)
 
@@ -83,7 +97,7 @@ class ControlClient():
                     except Exception as err:
                         pass
 
-                request={'connection_type':'MAIN_CLIENT','client_name':'T1'}
+                request={'connection_type':'MAIN_CLIENT','client_name':config['name']}
                 message=base64.b64encode(json.dumps(request).encode(encoding='utf-8'))
                 self.SOCKET.sendall(message)
                 feedback=json.loads(base64.b64decode(self.SOCKET.recv(1024)).decode(encoding='utf-8'))
