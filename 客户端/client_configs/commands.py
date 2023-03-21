@@ -18,15 +18,18 @@ def reload(client):
     print('开始重载客户端...')
     client.SOCKET.close()
     if hasattr(sys, 'frozen'):
-        cmd=os.path.abspath(sys.executable)
+        cmd=os.path.basename(os.path.abspath(sys.executable))
     else:
-        cmd='python '+os.path.abspath(__file__)
+        cmd='python '+os.path.basename(os.path.abspath(__file__))
     subprocess.run(cmd,shell=True)
     sys.exit(0)
 
 def syncPlugins(client):
     try:
         plugin_count=int(base64.b64decode(client.SOCKET.recv(1024)).decode(encoding='utf-8'))
+        message=base64.b64encode('Data Received'.encode(encoding='utf-8'))
+        client.SOCKET.sendall(message)
+        print(plugin_count)
         for i in range(plugin_count):
             client.recvFile()
             message=base64.b64encode('Data Received'.encode(encoding='utf-8'))

@@ -51,6 +51,7 @@ class ClientCommands():
             plugin_count+=1
         message=base64.b64encode(str(plugin_count).encode(encoding='utf-8'))
         client.SOCKET.sendall(message)
+        feedback=base64.b64decode(client.SOCKET.recv(1024)).decode(encoding='utf-8')
         for p,t in plugin_parser.items():
             if not os.path.exists(f'./plugins/{t["dir"]}'):
                 continue
